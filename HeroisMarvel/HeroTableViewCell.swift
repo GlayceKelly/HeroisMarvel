@@ -17,13 +17,10 @@ class HeroTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
 
     func prepareCell(with hero: Hero) {
@@ -38,10 +35,9 @@ class HeroTableViewCell: UITableViewCell {
             ivThumb.image = nil
         }
         
-        //Deixa a imagem redonda
+        //Deixa a imagem arredondada
         ivThumb.layer.cornerRadius = ivThumb.frame.size.height/2
         ivThumb.layer.borderColor = UIColor.red.cgColor
         ivThumb.layer.borderWidth = 2
     }
-    
 }

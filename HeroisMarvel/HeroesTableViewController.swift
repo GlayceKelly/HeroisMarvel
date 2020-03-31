@@ -9,8 +9,6 @@
 import UIKit
 
 class HeroesTableViewController: UITableViewController {
-    var name: String?
-    var heroes: [Hero] = []
     
     var label: UILabel = {
         let label = UILabel()
@@ -19,7 +17,9 @@ class HeroesTableViewController: UITableViewController {
         return label
     }()
     
-    var loagingHeroes = false
+    var name: String?
+    var heroes: [Hero] = []
+    var loadingHeroes = false
     var currentPage = 0
     var total = 0
     
@@ -34,8 +34,17 @@ class HeroesTableViewController: UITableViewController {
         navigationController?.setNavigationBarHidden(false, animated: true)
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        //Abre a tela heroViewController e envia o heroi
+        let vc = segue.destination as! HeroViewController
+        vc.hero = heroes[tableView.indexPathForSelectedRow!.row]
+    }
+    
     func loadHeroes() {
-        loagingHeroes = true
+        //Define como true para indicar que está buscando as informacoes da api
+        loadingHeroes = true
+        
+        //Realiza a comunicacao e obtem os dados da api
         MarvelAPI.loadHeros(name: name, page: currentPage) { (info) in
             if let info = info {
                 //Obtem os herois e adiciona na variavel
@@ -46,7 +55,7 @@ class HeroesTableViewController: UITableViewController {
                 
                 //Atualiza a table view
                 DispatchQueue.main.async {
-                    self.loagingHeroes = false
+                    self.loadingHeroes = false
                     self.label.text = "Não foram encontrados heróis com o nome \(self.name)."
                     self.tableView.reloadData()
                 }
@@ -66,9 +75,14 @@ class HeroesTableViewController: UITableViewController {
         let hero = heroes[indexPath.row]
         cell.prepareCell(with: hero)
 
-        // Configure the cell...
-
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.row == heroes.count - 10 && !loadingHeroes && heroes.count != total {
+            currentPage += 1
+            loadHeroes()
+        }
     }
 
     /*
